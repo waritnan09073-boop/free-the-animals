@@ -1,104 +1,246 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>เกมปล่อยกรงหมา</title>
+<title>NIGHT CAGES</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap');
+
 *{box-sizing:border-box}
-body{font-family:Prompt,sans-serif;text-align:center;background:#eaf5ff;color:#26364a;margin:0;padding:20px}
-h1{color:#245c91}
-.stats{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin:20px}
-.stat{background:white;padding:12px 24px;border-radius:15px}
-.stat strong{display:block;font-size:25px;color:#2879bd}
-.grid{max-width:800px;margin:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.cage{background:white;border:2px solid #b9cee0;border-radius:16px;padding:18px;cursor:pointer;font:inherit}
-.animal{font-size:48px;display:block}
-.cage.released{background:#e0f8e7;border-color:#79c794}
-.cage.released .animal{animation:run 1s forwards}
-@keyframes run{to{transform:translateX(150px);opacity:0}}
-.overlay{display:none;position:fixed;inset:0;background:#0009;align-items:center;justify-content:center;padding:20px}
+body{
+ margin:0;background:#08090c;color:white;
+ font-family:Prompt,sans-serif;overflow:hidden;
+}
+.hud{
+ position:fixed;top:0;left:0;right:0;z-index:5;
+ display:flex;justify-content:space-between;
+ padding:15px;background:linear-gradient(#000,transparent);
+}
+.logo{letter-spacing:3px;font-weight:bold}
+.stage{
+ height:100vh;overflow:hidden;
+ background:radial-gradient(ellipse,#343036,#08090c 75%);
+}
+.camera{
+ position:absolute;inset:0;
+ transition:transform 1.2s ease;
+}
+.track{display:flex;height:100%}
+.scene{
+ width:100vw;height:100%;
+ flex-shrink:0;position:relative;
+ display:flex;align-items:center;justify-content:center;
+}
+.sector{
+ position:absolute;top:25%;
+ letter-spacing:5px;color:#777;
+}
+.cage{
+ width:min(75vw,390px);height:300px;
+ position:relative;cursor:pointer;
+ border:9px solid #454047;
+ background:#171519;
+ box-shadow:0 0 40px #000;
+ overflow:hidden;
+}
+.bars{
+ position:absolute;inset:0;z-index:3;
+ display:flex;justify-content:space-around;
+ pointer-events:none;
+}
+.bars i{
+ width:8px;height:100%;
+ background:linear-gradient(90deg,#222,#888,#222);
+}
+.gate{
+ position:absolute;inset:0;z-index:4;
+ background:repeating-linear-gradient(
+ 90deg,transparent 0 25px,#777 27px 34px,#252329 36px 42px);
+ border-bottom:8px solid #999;
+ transition:transform 1s ease;
+}
+.cage.open .gate{transform:translateY(-105%)}
+.pet{
+ position:absolute;bottom:15%;left:50%;
+ transform:translateX(-50%);
+ font-size:80px;z-index:2;
+}
+.pet.escape{animation:run 1.3s forwards}
+@keyframes run{
+ 0%{transform:translateX(-50%)}
+ 100%{transform:translateX(220%);opacity:0}
+}
+.hint{
+ position:absolute;bottom:15%;color:#aaa;
+}
+.overlay{
+ display:none;position:fixed;inset:0;
+ z-index:10;background:#000c;
+ align-items:center;justify-content:center;
+}
 .overlay.show{display:flex}
-.popup{background:white;border-radius:20px;padding:25px;width:min(350px,100%)}
-.popup .big{font-size:55px}
-button.primary{background:#2879bd;color:white;border:0;padding:12px 25px;border-radius:30px;font:inherit;cursor:pointer}
-#ending{display:none;position:fixed;inset:0;background:#101827;color:white;overflow:auto;padding:25px}
-#ending.show{display:flex;align-items:center;justify-content:center}
-#ending video{width:100%;max-width:800px;max-height:65vh}
-@media(min-width:650px){.grid{grid-template-columns:repeat(5,1fr)}}
+.popup{
+ background:#211e22;border:1px solid #75575b;
+ padding:25px;border-radius:15px;
+ text-align:center;width:300px;
+}
+.emoji{font-size:55px}
+button{
+ background:#761f29;color:white;
+ border:1px solid #a55b60;
+ padding:12px 25px;border-radius:8px;
+ font:inherit;cursor:pointer;
+}
+#ending{
+ display:none;position:fixed;inset:0;
+ z-index:20;background:#050609;
+ align-items:center;justify-content:center;
+ text-align:center;padding:20px;
+}
+#ending.show{display:flex}
+#ending video{width:100%;max-width:800px}
 </style>
 </head>
 <body>
-<h1>🐶 เกมปล่อยกรงหมา 🐱</h1>
-<div class="stats">
-<div class="stat">คะแนน<strong id="score">0</strong></div>
-<div class="stat">ปล่อยแล้ว<strong><span id="count">0</span>/10</strong></div>
+
+<div class="hud">
+ <div class="logo">NIGHT CAGES</div>
+ <div>คะแนน <b id="score">0</b> |
+ ปล่อยแล้ว <b id="count">0</b>/10</div>
 </div>
-<div class="grid" id="cages"></div>
-<p>แตะกรงเพื่อปลดล็อกและปล่อยสัตว์!</p>
+
+<div class="stage">
+ <div class="camera" id="camera">
+  <div class="track" id="track"></div>
+ </div>
+</div>
+
 <div class="overlay" id="popup">
-<div class="popup">
-<div class="big" id="popAnimal">🐶</div>
-<h2 id="popTitle">ปล่อยสำเร็จ!</h2>
-<p id="popText"></p>
-<button class="primary" id="next">ไปต่อ</button>
+ <div class="popup">
+  <div class="emoji" id="popEmoji">🐶</div>
+  <h2 id="popTitle">ปล่อยสำเร็จ!</h2>
+  <p id="popText"></p>
+  <button id="next">ไปกรงถัดไป</button>
+ </div>
 </div>
-</div>
+
 <div id="ending">
-<div>
-<h1 style="color:white">🎉 ปล่อยครบ 10 ตัวแล้ว!</h1>
-<p id="finalScore"></p>
-<video id="endVideo" controls playsinline>
-<source src="ending-video.mp4" type="video/mp4">
-</video>
-<br><button class="primary" id="again">เล่นอีกครั้ง</button>
+ <div>
+  <h1>🎉 ปล่อยสัตว์ครบ 10 กรงแล้ว!</h1>
+  <p id="finalScore"></p>
+  <video id="endingVideo" controls playsinline>
+   <source src="ending-video.mp4" type="video/mp4">
+  </video>
+  <p>THE END</p>
+  <button onclick="resetGame()">เล่นอีกครั้ง</button>
+ </div>
 </div>
-</div>
+
 <script>
-const animals=['🐶','🐱','🐶','🐱','🐶','🐱','🐶','🐱','🐶','🐱'];
-let score=0,count=0;
-const cages=document.getElementById('cages');
-function draw(){
-cages.innerHTML='';
+const animals=[
+'🐶','🐱','🐶','🐱','🐶',
+'🐱','🐶','🐱','🐶','🐱'
+];
+
+const track=document.getElementById('track');
+let current=0;
+let score=0;
+let count=0;
+let waiting=false;
+
 animals.forEach((animal,i)=>{
-const b=document.createElement('button');
-b.className='cage';
-b.innerHTML='<span class="animal">'+animal+'</span>กรงที่ '+(i+1)+'<br>🔒 ล็อกอยู่';
-b.onclick=()=>{
-if(b.classList.contains('released'))return;
-b.classList.add('released');b.disabled=true;
-b.innerHTML='<span class="animal">'+animal+'</span>กรงที่ '+(i+1)+'<br>🔓 ปล่อยแล้ว!';
-score+=10;count++;
-document.getElementById('score').textContent=score;
-document.getElementById('count').textContent=count;
-document.getElementById('popAnimal').textContent=animal;
-document.getElementById('popTitle').textContent=animal==='🐶'?'ปล่อยน้องหมาสำเร็จ!':'ปล่อยน้องแมวสำเร็จ!';
-document.getElementById('popText').textContent='ได้ 10 คะแนน • ปล่อยแล้ว '+count+'/10 ตัว';
-document.getElementById('popup').classList.add('show');
-};
-cages.appendChild(b);
+ const scene=document.createElement('div');
+ scene.className='scene';
+
+ scene.innerHTML=`
+ <div class="sector">CAGE ${i+1} / 10</div>
+ <div class="cage">
+  <div class="pet">${animal}</div>
+  <div class="bars">
+   <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <div class="gate"></div>
+ </div>
+ <div class="hint">แตะกรงเพื่อเปิด</div>
+ `;
+
+ const cage=scene.querySelector('.cage');
+
+ cage.onclick=()=>{
+  if(i!==current||waiting||cage.classList.contains('open'))return;
+
+  waiting=true;
+  cage.classList.add('open');
+
+  setTimeout(()=>{
+   scene.querySelector('.pet').classList.add('escape');
+  },500);
+
+  score+=10;
+  count++;
+
+  document.getElementById('score').textContent=score;
+  document.getElementById('count').textContent=count;
+  document.getElementById('popEmoji').textContent=animal;
+
+  document.getElementById('popTitle').textContent=
+  animal==='🐶'?'ปล่อยน้องหมาแล้ว!':'ปล่อยน้องแมวแล้ว!';
+
+  document.getElementById('popText').textContent=
+  '+10 คะแนน | ปล่อยแล้ว '+count+'/10 ตัว';
+
+  setTimeout(()=>{
+   document.getElementById('popup').classList.add('show');
+  },900);
+ };
+
+ track.appendChild(scene);
 });
-}
+
 document.getElementById('next').onclick=()=>{
-document.getElementById('popup').classList.remove('show');
-if(count===10){
-document.getElementById('finalScore').textContent='คะแนนรวม '+score+' คะแนน';
-document.getElementById('ending').classList.add('show');
-document.getElementById('endVideo').play().catch(()=>{});
-}
+ document.getElementById('popup').classList.remove('show');
+
+ if(count===10){
+  document.getElementById('finalScore').textContent=
+  'คะแนนรวม '+score+' คะแนน';
+
+  document.getElementById('ending').classList.add('show');
+
+  document.getElementById('endingVideo').play().catch(()=>{});
+  return;
+ }
+
+ current++;
+ document.getElementById('camera').style.transform=
+ `translateX(-${current*100}vw)`;
+
+ waiting=false;
 };
-function reset(){
-score=0;count=0;
-document.getElementById('score').textContent=0;
-document.getElementById('count').textContent=0;
-document.getElementById('popup').classList.remove('show');
-document.getElementById('ending').classList.remove('show');
-const v=document.getElementById('endVideo');v.pause();v.currentTime=0;
-draw();
+
+function resetGame(){
+ current=0;score=0;count=0;waiting=false;
+
+ document.getElementById('score').textContent=0;
+ document.getElementById('count').textContent=0;
+
+ document.getElementById('popup').classList.remove('show');
+ document.getElementById('ending').classList.remove('show');
+
+ const video=document.getElementById('endingVideo');
+ video.pause();video.currentTime=0;
+
+ document.getElementById('camera').style.transform='translateX(0)';
+
+ document.querySelectorAll('.cage').forEach(c=>{
+  c.classList.remove('open');
+ });
+
+ document.querySelectorAll('.pet').forEach(p=>{
+  p.classList.remove('escape');
+ });
 }
-document.getElementById('again').onclick=reset;
-draw();
 </script>
 </body>
-  </html>
+</html>
