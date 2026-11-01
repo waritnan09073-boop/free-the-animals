@@ -3,244 +3,719 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Free The Animal</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap');
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREE THE ANIMAL</title>
 
-*{box-sizing:border-box}
-body{
- margin:0;background:#08090c;color:white;
- font-family:Prompt,sans-serif;overflow:hidden;
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap');
+
+:root {
+  --ui-scale: 1;
+  --bg: #080808;
+  --panel: #151515;
+  --line: #303030;
+  --text: #f5f5f5;
+  --muted: #999;
+  --accent: #eeeeee;
 }
-.hud{
- position:fixed;top:0;left:0;right:0;z-index:5;
- display:flex;justify-content:space-between;
- padding:15px;background:linear-gradient(#000,transparent);
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
-.logo{letter-spacing:3px;font-weight:bold}
-.stage{
- height:100vh;overflow:hidden;
- background:radial-gradient(ellipse,#343036,#08090c 75%);
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Prompt', sans-serif;
+  overflow: hidden;
 }
-.camera{
- position:absolute;inset:0;
- transition:transform 1.2s ease;
+
+button {
+  font-family: inherit;
+  cursor: pointer;
 }
-.track{display:flex;height:100%}
-.scene{
- width:100vw;height:100%;
- flex-shrink:0;position:relative;
- display:flex;align-items:center;justify-content:center;
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  background: var(--bg);
 }
-.sector{
- position:absolute;top:25%;
- letter-spacing:5px;color:#777;
+
+.screen.active {
+  display: flex;
 }
-.cage{
- width:min(75vw,390px);height:300px;
- position:relative;cursor:pointer;
- border:9px solid #454047;
- background:#171519;
- box-shadow:0 0 40px #000;
- overflow:hidden;
+
+#menu, #settings {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
-.bars{
- position:absolute;inset:0;z-index:3;
- display:flex;justify-content:space-around;
- pointer-events:none;
+
+.menu-box {
+  width: min(100%, 430px);
+  text-align: center;
 }
-.bars i{
- width:8px;height:100%;
- background:linear-gradient(90deg,#222,#888,#222);
+
+.logo {
+  font-size: clamp(32px, 7vw, 55px);
+  font-weight: 700;
+  letter-spacing: 3px;
+  line-height: 1.2;
 }
-.gate{
- position:absolute;inset:0;z-index:4;
- background:repeating-linear-gradient(
- 90deg,transparent 0 25px,#777 27px 34px,#252329 36px 42px);
- border-bottom:8px solid #999;
- transition:transform 1s ease;
+
+.subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 12px 0 35px;
+  letter-spacing: 2px;
 }
-.cage.open .gate{transform:translateY(-105%)}
-.pet{
- position:absolute;bottom:15%;left:50%;
- transform:translateX(-50%);
- font-size:80px;z-index:2;
+
+.menu-buttons {
+  display: grid;
+  gap: 12px;
 }
-.pet.escape{animation:run 1.3s forwards}
-@keyframes run{
- 0%{transform:translateX(-50%)}
- 100%{transform:translateX(220%);opacity:0}
+
+.btn {
+  border: 1px solid var(--line);
+  background: #171717;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 9px;
+  font-size: 16px;
+  transition: .2s;
 }
-.hint{
- position:absolute;bottom:15%;color:#aaa;
+
+.btn:hover {
+  background: #292929;
 }
-.overlay{
- display:none;position:fixed;inset:0;
- z-index:10;background:#000c;
- align-items:center;justify-content:center;
+
+.btn.primary {
+  background: #eee;
+  color: #111;
+  border-color: #eee;
+  font-weight: 600;
 }
-.overlay.show{display:flex}
-.popup{
- background:#211e22;border:1px solid #75575b;
- padding:25px;border-radius:15px;
- text-align:center;width:300px;
+
+.btn.primary:hover {
+  background: #ccc;
 }
-.emoji{font-size:55px}
-button{
- background:#761f29;color:white;
- border:1px solid #a55b60;
- padding:12px 25px;border-radius:8px;
- font:inherit;cursor:pointer;
+
+.small-note {
+  color: #666;
+  font-size: 11px;
+  margin-top: 35px;
 }
-#ending{
- display:none;position:fixed;inset:0;
- z-index:20;background:#050609;
- align-items:center;justify-content:center;
- text-align:center;padding:20px;
+
+.settings-box {
+  width: min(100%, 460px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 25px;
+  border-radius: 14px;
 }
-#ending.show{display:flex}
-#ending video{width:100%;max-width:800px}
+
+.settings-box h2 {
+  margin: 0 0 22px;
+  font-size: 25px;
+}
+
+.setting-label {
+  color: #aaa;
+  font-size: 13px;
+  margin: 20px 0 9px;
+}
+
+.device-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+}
+
+.device {
+  background: #202020;
+  border: 1px solid #393939;
+  color: white;
+  padding: 13px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.device.selected {
+  border-color: white;
+  background: #353535;
+}
+
+.device span {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 4px;
+}
+
+#game {
+  flex-direction: column;
+}
+
+.topbar {
+  height: 64px;
+  flex-shrink: 0;
+  background: #101010;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  z-index: 5;
+}
+
+.topbar-title {
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 15px;
+}
+
+.game-info {
+  font-size: 12px;
+  color: #bbb;
+}
+
+#world {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background:
+    radial-gradient(ellipse at center, #191919 0%, #090909 75%);
+}
+
+#track {
+  height: 100%;
+  display: flex;
+  width: 1000vw;
+  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+
+.room {
+  width: 100vw;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 15px;
+}
+
+.room-number {
+  color: #777;
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.cage {
+  position: relative;
+  width: min(76vw, 340px);
+  height: min(54vh, 340px);
+  min-height: 210px;
+  border: 7px solid #444;
+  border-bottom: 10px solid #555;
+  background: linear-gradient(#111, #080808);
+  box-shadow: 0 0 30px #000, inset 0 0 25px #000;
+  overflow: hidden;
+}
+
+.cage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 23px,
+    #555 24px,
+    #555 27px
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.animal {
+  position: absolute;
+  z-index: 1;
+  font-size: clamp(65px, 13vw, 105px);
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  transition: left 1s ease, bottom 1s ease, opacity .5s;
+  filter: grayscale(.25);
+}
+
+.gate {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    #292929 0px,
+    #292929 8px,
+    #111 9px,
+    #111 23px
+  );
+  border-bottom: 8px solid #666;
+  transition: transform 1s ease;
+}
+
+.cage.open .gate {
+  transform: translateY(-110%);
+}
+
+.animal.escape {
+  left: 125%;
+  bottom: 10px;
+  opacity: 0;
+}
+
+.floor {
+  width: min(95vw, 520px);
+  height: 3px;
+  background: #333;
+  margin-top: 30px;
+  box-shadow: 0 10px 30px #000;
+}
+
+.instruction {
+  color: #999;
+  font-size: 13px;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.action-area {
+  padding: 12px 18px 18px;
+  background: #101010;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.action-area .btn {
+  padding: 10px 17px;
+  font-size: 13px;
+}
+
+.progress {
+  height: 4px;
+  background: #292929;
+  flex: 1;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #eee;
+  transition: width .4s;
+}
+
+#popup {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #000b;
+  padding: 20px;
+}
+
+.popup-box {
+  width: min(100%, 340px);
+  background: #171717;
+  border: 1px solid #444;
+  padding: 27px;
+  text-align: center;
+  border-radius: 13px;
+  animation: appear .3s ease;
+}
+
+.popup-box h2 {
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+
+.popup-box p {
+  color: #bbb;
+  font-size: 14px;
+}
+
+.popup-box .btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+#ending {
+  background: #000;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#ending h1 {
+  font-size: clamp(25px, 6vw, 42px);
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+#ending video {
+  width: min(100%, 850px);
+  max-height: 65vh;
+  background: #111;
+  border-radius: 10px;
+}
+
+#ending .btn {
+  margin-top: 20px;
+  min-width: 180px;
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    height: 55px;
+    padding: 0 12px;
+  }
+  .action-area {
+    padding: 10px;
+  }
+  .action-area .btn {
+    padding: 9px 12px;
+  }
+}
+
+body.device-phone {
+  --ui-scale: .9;
+}
+
+body.device-tablet {
+  --ui-scale: 1.08;
+}
+
+body.device-computer {
+  --ui-scale: 1.15;
+}
+
+body.device-phone .logo {
+  font-size: clamp(29px, 8vw, 42px);
+}
+
+body.device-tablet .cage {
+  width: min(60vw, 390px);
+}
+
+body.device-computer .cage {
+  width: min(35vw, 430px);
+}
 </style>
 </head>
+
 <body>
 
-<div class="hud">
- <div class="logo">NIGHT CAGES</div>
- <div>คะแนน <b id="score">0</b> |
- ปล่อยแล้ว <b id="count">0</b>/10</div>
+<!-- MAIN MENU -->
+<section id="menu" class="screen active">
+  <div class="menu-box">
+    <div class="logo">FREE THE<br>ANIMAL</div>
+    <div class="subtitle">EVERY ANIMAL DESERVES FREEDOM</div>
+
+    <div class="menu-buttons">
+      <button class="btn primary" onclick="startGame()">▶ PLAY</button>
+      <button class="btn" onclick="showScreen('settings')">⚙ SETTINGS</button>
+    </div>
+
+    <div class="small-note">FREE THE ANIMAL · VERSION 1.0</div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="screen">
+  <div class="settings-box">
+    <h2>SETTINGS</h2>
+
+    <div class="setting-label">เลือกอุปกรณ์สำหรับปรับ UI</div>
+
+    <div class="device-options">
+      <button class="device selected" data-device="auto" onclick="setDevice('auto')">
+        <span>⚙️</span>Auto
+      </button>
+      <button class="device" data-device="phone" onclick="setDevice('phone')">
+        <span>📱</span>Phone
+      </button>
+      <button class="device" data-device="tablet" onclick="setDevice('tablet')">
+        <span>📲</span>Tablet
+      </button>
+      <button class="device" data-device="computer" onclick="setDevice('computer')">
+        <span>💻</span>Computer
+      </button>
+    </div>
+
+    <div class="setting-label">การปรับ UI</div>
+    <p style="font-size:12px;color:#888;line-height:1.7">
+      Auto จะตรวจจับขนาดหน้าจอและปรับ UI ให้เหมาะสมโดยอัตโนมัติ
+    </p>
+
+    <button class="btn primary" style="width:100%;margin-top:20px"
+      onclick="showScreen('menu')">SAVE & BACK</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">FREE THE ANIMAL</div>
+    <div class="game-info">
+      <span id="counter">0 / 10</span>
+      &nbsp; | &nbsp;
+      <span id="score">0 POINTS</span>
+    </div>
+  </div>
+
+  <div id="world">
+    <div id="track"></div>
+  </div>
+
+  <div class="action-area">
+    <button class="btn" onclick="backToMenu()">MENU</button>
+    <div class="progress">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <button class="btn primary" id="releaseBtn" onclick="releaseAnimal()">OPEN CAGE</button>
+  </div>
+</section>
+
+<!-- POPUP -->
+<div id="popup">
+  <div class="popup-box">
+    <h2 id="popupTitle">ANIMAL RELEASED!</h2>
+    <p id="popupText">ปล่อยสัตว์สำเร็จแล้ว</p>
+    <button class="btn primary" onclick="nextCage()">NEXT →</button>
+  </div>
 </div>
 
-<div class="stage">
- <div class="camera" id="camera">
-  <div class="track" id="track"></div>
- </div>
-</div>
+<!-- ENDING -->
+<section id="ending" class="screen">
+  <h1>YOU FREED THEM ALL.</h1>
+  <p style="color:#999">ขอบคุณที่มอบอิสรภาพให้สัตว์ทั้ง 10 ตัว</p>
 
-<div class="overlay" id="popup">
- <div class="popup">
-  <div class="emoji" id="popEmoji">🐶</div>
-  <h2 id="popTitle">ปล่อยสำเร็จ!</h2>
-  <p id="popText"></p>
-  <button id="next">ไปกรงถัดไป</button>
- </div>
-</div>
-
-<div id="ending">
- <div>
-  <h1>🎉 ปล่อยสัตว์ครบ 10 กรงแล้ว!</h1>
-  <p id="finalScore"></p>
   <video id="endingVideo" controls playsinline>
-   <source src="ending-video.mp4" type="video/mp4">
+    <source src="ending-video.mp4" type="video/mp4">
+    เบราว์เซอร์ไม่รองรับวิดีโอ
   </video>
-  <p>THE END</p>
-  <button onclick="resetGame()">เล่นอีกครั้ง</button>
- </div>
-</div>
+
+  <button class="btn" onclick="resetGame()">PLAY AGAIN</button>
+  <button class="btn" onclick="backToMenu()">MAIN MENU</button>
+</section>
 
 <script>
-const animals=[
-'🐶','🐱','🐶','🐱','🐶',
-'🐱','🐶','🐱','🐶','🐱'
+const animals = [
+  "🐶", "🐱", "🐶", "🐱", "🐶",
+  "🐱", "🐶", "🐱", "🐶", "🐱"
 ];
 
-const track=document.getElementById('track');
-let current=0;
-let score=0;
-let count=0;
-let waiting=false;
+let current = 0;
+let released = 0;
+let score = 0;
+let deviceMode = "auto";
+let busy = false;
 
-animals.forEach((animal,i)=>{
- const scene=document.createElement('div');
- scene.className='scene';
+const track = document.getElementById("track");
+const popup = document.getElementById("popup");
 
- scene.innerHTML=`
- <div class="sector">CAGE ${i+1} / 10</div>
- <div class="cage">
-  <div class="pet">${animal}</div>
-  <div class="bars">
-   <i></i><i></i><i></i><i></i><i></i><i></i>
-  </div>
-  <div class="gate"></div>
- </div>
- <div class="hint">แตะกรงเพื่อเปิด</div>
- `;
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
+  document.getElementById(id).classList.add("active");
+}
 
- const cage=scene.querySelector('.cage');
+function setDevice(device) {
+  deviceMode = device;
 
- cage.onclick=()=>{
-  if(i!==current||waiting||cage.classList.contains('open'))return;
+  document.querySelectorAll(".device").forEach(btn => {
+    btn.classList.toggle(
+      "selected",
+      btn.dataset.device === device
+    );
+  });
 
-  waiting=true;
-  cage.classList.add('open');
+  applyDevice();
+}
 
-  setTimeout(()=>{
-   scene.querySelector('.pet').classList.add('escape');
-  },500);
+function applyDevice() {
+  document.body.classList.remove(
+    "device-phone",
+    "device-tablet",
+    "device-computer"
+  );
 
-  score+=10;
-  count++;
+  let chosen = deviceMode;
 
-  document.getElementById('score').textContent=score;
-  document.getElementById('count').textContent=count;
-  document.getElementById('popEmoji').textContent=animal;
+  if (chosen === "auto") {
+    const width = window.innerWidth;
 
-  document.getElementById('popTitle').textContent=
-  animal==='🐶'?'ปล่อยน้องหมาแล้ว!':'ปล่อยน้องแมวแล้ว!';
+    if (width < 600) chosen = "phone";
+    else if (width < 1100) chosen = "tablet";
+    else chosen = "computer";
+  }
 
-  document.getElementById('popText').textContent=
-  '+10 คะแนน | ปล่อยแล้ว '+count+'/10 ตัว';
+  document.body.classList.add("device-" + chosen);
+}
 
-  setTimeout(()=>{
-   document.getElementById('popup').classList.add('show');
-  },900);
- };
-
- track.appendChild(scene);
+window.addEventListener("resize", () => {
+  if (deviceMode === "auto") applyDevice();
 });
 
-document.getElementById('next').onclick=()=>{
- document.getElementById('popup').classList.remove('show');
+function buildCages() {
+  track.innerHTML = "";
 
- if(count===10){
-  document.getElementById('finalScore').textContent=
-  'คะแนนรวม '+score+' คะแนน';
+  animals.forEach((animal, index) => {
+    const room = document.createElement("div");
+    room.className = "room";
 
-  document.getElementById('ending').classList.add('show');
+    room.innerHTML = `
+      <div class="room-number">CAGE ${index + 1} / 10</div>
 
-  document.getElementById('endingVideo').play().catch(()=>{});
-  return;
- }
+      <div class="cage" id="cage-${index}">
+        <div class="animal" id="animal-${index}">${animal}</div>
+        <div class="gate"></div>
+      </div>
 
- current++;
- document.getElementById('camera').style.transform=
- `translateX(-${current*100}vw)`;
+      <div class="floor"></div>
 
- waiting=false;
-};
+      <div class="instruction">
+        ${index % 2 === 0 ? "A DOG IS WAITING FOR FREEDOM" : "A CAT IS WAITING FOR FREEDOM"}
+      </div>
+    `;
 
-function resetGame(){
- current=0;score=0;count=0;waiting=false;
-
- document.getElementById('score').textContent=0;
- document.getElementById('count').textContent=0;
-
- document.getElementById('popup').classList.remove('show');
- document.getElementById('ending').classList.remove('show');
-
- const video=document.getElementById('endingVideo');
- video.pause();video.currentTime=0;
-
- document.getElementById('camera').style.transform='translateX(0)';
-
- document.querySelectorAll('.cage').forEach(c=>{
-  c.classList.remove('open');
- });
-
- document.querySelectorAll('.pet').forEach(p=>{
-  p.classList.remove('escape');
- });
+    track.appendChild(room);
+  });
 }
+
+function startGame() {
+  resetValues();
+  buildCages();
+  showScreen("game");
+  updateUI();
+}
+
+function resetValues() {
+  current = 0;
+  released = 0;
+  score = 0;
+  busy = false;
+  track.style.transform = "translateX(0)";
+  popup.style.display = "none";
+}
+
+function updateUI() {
+  document.getElementById("counter").textContent =
+    released + " / 10";
+
+  document.getElementById("score").textContent =
+    score + " POINTS";
+
+  document.getElementById("progressFill").style.width =
+    (released * 10) + "%";
+
+  document.getElementById("releaseBtn").disabled =
+    busy || released >= 10;
+}
+
+function releaseAnimal() {
+  if (busy || released >= 10) return;
+
+  busy = true;
+
+  const cage = document.getElementById("cage-" + current);
+  const animal = document.getElementById("animal-" + current);
+
+  cage.classList.add("open");
+
+  setTimeout(() => {
+    animal.classList.add("escape");
+  }, 350);
+
+  setTimeout(() => {
+    released++;
+    score += 100;
+
+    updateUI();
+
+    document.getElementById("popupTitle").textContent =
+      "ANIMAL RELEASED!";
+
+    document.getElementById("popupText").textContent =
+      "ปล่อยสัตว์สำเร็จแล้ว +100 คะแนน · " +
+      released + " / 10 ตัว";
+
+    popup.style.display = "flex";
+  }, 1350);
+}
+
+function nextCage() {
+  popup.style.display = "none";
+  busy = false;
+
+  if (released >= 10) {
+    finishGame();
+    return;
+  }
+
+  current++;
+  track.style.transform =
+    `translateX(-${current * 100}vw)`;
+
+  updateUI();
+}
+
+function finishGame() {
+  showScreen("ending");
+
+  const video = document.getElementById("endingVideo");
+  video.currentTime = 0;
+  video.play().catch(() => {
+    // ผู้เล่นสามารถกดปุ่มเล่นวิดีโอเองได้
+  });
+}
+
+function backToMenu() {
+  document.getElementById("endingVideo").pause();
+  popup.style.display = "none";
+  showScreen("menu");
+}
+
+function resetGame() {
+  document.getElementById("endingVideo").pause();
+  startGame();
+}
+
+applyDevice();
+buildCages();
 </script>
+
 </body>
 </html>
