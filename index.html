@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -5,17 +6,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FREE THE ANIMAL</title>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap');
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- Markdown renderer -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
+<style>
 :root {
-  --ui-scale: 1;
   --bg: #080808;
   --panel: #151515;
   --line: #303030;
   --text: #f5f5f5;
   --muted: #999;
-  --accent: #eeeeee;
 }
 
 * {
@@ -36,6 +41,11 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 .screen {
   position: fixed;
   inset: 0;
@@ -46,6 +56,122 @@ button {
 .screen.active {
   display: flex;
 }
+
+/* TIPS */
+
+#tips {
+  flex-direction: column;
+  align-items: center;
+  padding: 25px 18px;
+  overflow-y: auto;
+}
+
+.tips-box {
+  width: min(100%, 760px);
+  margin: auto;
+  padding: 25px;
+  background: #111;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.tips-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.tips-header h1 {
+  font-size: 30px;
+  letter-spacing: 3px;
+  margin: 0;
+}
+
+.tips-header p {
+  color: #888;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.tips-content {
+  color: #ddd;
+  font-size: 14px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.tips-content h1,
+.tips-content h2,
+.tips-content h3 {
+  color: white;
+  margin-top: 22px;
+}
+
+.tips-content h1 {
+  font-size: 24px;
+}
+
+.tips-content h2 {
+  font-size: 20px;
+}
+
+.tips-content h3 {
+  font-size: 17px;
+}
+
+.tips-content a {
+  color: #ccc;
+}
+
+.tips-content code {
+  background: #252525;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.tips-content pre {
+  background: #080808;
+  padding: 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.tips-content blockquote {
+  border-left: 3px solid #777;
+  margin-left: 0;
+  padding-left: 14px;
+  color: #aaa;
+}
+
+.tips-content img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.tips-content table {
+  border-collapse: collapse;
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.tips-content th,
+.tips-content td {
+  border: 1px solid #444;
+  padding: 8px;
+}
+
+.tips-loading {
+  color: #888;
+  text-align: center;
+  padding: 30px 10px;
+}
+
+.tips-back {
+  width: 100%;
+  margin-top: 25px;
+}
+
+/* MENU */
 
 #menu, #settings {
   align-items: center;
@@ -108,6 +234,8 @@ button {
   margin-top: 35px;
 }
 
+/* SETTINGS */
+
 .settings-box {
   width: min(100%, 460px);
   background: var(--panel);
@@ -153,6 +281,8 @@ button {
   margin-bottom: 4px;
 }
 
+/* GAME */
+
 #game {
   flex-direction: column;
 }
@@ -184,8 +314,7 @@ button {
   flex: 1;
   overflow: hidden;
   position: relative;
-  background:
-    radial-gradient(ellipse at center, #191919 0%, #090909 75%);
+  background: radial-gradient(ellipse at center, #191919 0%, #090909 75%);
 }
 
 #track {
@@ -327,6 +456,8 @@ button {
   transition: width .4s;
 }
 
+/* POPUP */
+
 #popup {
   position: fixed;
   inset: 0;
@@ -364,9 +495,17 @@ button {
 }
 
 @keyframes appear {
-  from { opacity: 0; transform: scale(.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
+
+/* ENDING */
 
 #ending {
   background: #000;
@@ -394,29 +533,25 @@ button {
   min-width: 180px;
 }
 
+/* RESPONSIVE */
+
 @media (max-width: 600px) {
   .topbar {
     height: 55px;
     padding: 0 12px;
   }
+
   .action-area {
     padding: 10px;
   }
+
   .action-area .btn {
     padding: 9px 12px;
   }
-}
 
-body.device-phone {
-  --ui-scale: .9;
-}
-
-body.device-tablet {
-  --ui-scale: 1.08;
-}
-
-body.device-computer {
-  --ui-scale: 1.15;
+  .tips-box {
+    padding: 18px;
+  }
 }
 
 body.device-phone .logo {
@@ -435,57 +570,94 @@ body.device-computer .cage {
 
 <body>
 
+<!-- TIPS: หน้าแรก -->
+<section id="tips" class="screen active">
+  <div class="tips-box">
+
+    <div class="tips-header">
+      <h1>GAME TIPS</h1>
+      <p>FREE THE ANIMAL · PLEASE READ BEFORE PLAYING</p>
+    </div>
+
+    <div id="tipsContent" class="tips-content">
+      <div class="tips-loading">
+        กำลังโหลด Tips...
+      </div>
+    </div>
+
+    <button class="btn primary tips-back" onclick="showScreen('menu')">
+      กลับไปที่เกม
+    </button>
+
+  </div>
+</section>
+
 <!-- MAIN MENU -->
-<section id="menu" class="screen active">
+<section id="menu" class="screen">
   <div class="menu-box">
+
     <div class="logo">FREE THE<br>ANIMAL</div>
     <div class="subtitle">EVERY ANIMAL DESERVES FREEDOM</div>
 
     <div class="menu-buttons">
       <button class="btn primary" onclick="startGame()">▶ PLAY</button>
+      <button class="btn" onclick="showScreen('tips')">📖 TIPS</button>
       <button class="btn" onclick="showScreen('settings')">⚙ SETTINGS</button>
     </div>
 
     <div class="small-note">FREE THE ANIMAL · VERSION 1.0</div>
+
   </div>
 </section>
 
 <!-- SETTINGS -->
 <section id="settings" class="screen">
   <div class="settings-box">
+
     <h2>SETTINGS</h2>
 
     <div class="setting-label">เลือกอุปกรณ์สำหรับปรับ UI</div>
 
     <div class="device-options">
+
       <button class="device selected" data-device="auto" onclick="setDevice('auto')">
         <span>⚙️</span>Auto
       </button>
+
       <button class="device" data-device="phone" onclick="setDevice('phone')">
         <span>📱</span>Phone
       </button>
+
       <button class="device" data-device="tablet" onclick="setDevice('tablet')">
         <span>📲</span>Tablet
       </button>
+
       <button class="device" data-device="computer" onclick="setDevice('computer')">
         <span>💻</span>Computer
       </button>
+
     </div>
 
     <div class="setting-label">การปรับ UI</div>
+
     <p style="font-size:12px;color:#888;line-height:1.7">
       Auto จะตรวจจับขนาดหน้าจอและปรับ UI ให้เหมาะสมโดยอัตโนมัติ
     </p>
 
     <button class="btn primary" style="width:100%;margin-top:20px"
-      onclick="showScreen('menu')">SAVE & BACK</button>
+      onclick="showScreen('menu')">
+      SAVE & BACK
+    </button>
+
   </div>
 </section>
 
 <!-- GAME -->
 <section id="game" class="screen">
+
   <div class="topbar">
     <div class="topbar-title">FREE THE ANIMAL</div>
+
     <div class="game-info">
       <span id="counter">0 / 10</span>
       &nbsp; | &nbsp;
@@ -498,27 +670,43 @@ body.device-computer .cage {
   </div>
 
   <div class="action-area">
+
     <button class="btn" onclick="backToMenu()">MENU</button>
+
     <div class="progress">
       <div class="progress-fill" id="progressFill"></div>
     </div>
-    <button class="btn primary" id="releaseBtn" onclick="releaseAnimal()">OPEN CAGE</button>
+
+    <button class="btn primary" id="releaseBtn" onclick="releaseAnimal()">
+      OPEN CAGE
+    </button>
+
   </div>
 </section>
 
 <!-- POPUP -->
 <div id="popup">
   <div class="popup-box">
+
     <h2 id="popupTitle">ANIMAL RELEASED!</h2>
+
     <p id="popupText">ปล่อยสัตว์สำเร็จแล้ว</p>
-    <button class="btn primary" onclick="nextCage()">NEXT →</button>
+
+    <button class="btn primary" onclick="nextCage()">
+      NEXT →
+    </button>
+
   </div>
 </div>
 
 <!-- ENDING -->
 <section id="ending" class="screen">
+
   <h1>YOU FREED THEM ALL.</h1>
-  <p style="color:#999">ขอบคุณที่มอบอิสรภาพให้สัตว์ทั้ง 10 ตัว</p>
+
+  <p style="color:#999">
+    ขอบคุณที่มอบอิสรภาพให้สัตว์ทั้ง 10 ตัว
+  </p>
 
   <video id="endingVideo" controls playsinline>
     <source src="ending-video.mp4" type="video/mp4">
@@ -527,6 +715,7 @@ body.device-computer .cage {
 
   <button class="btn" onclick="resetGame()">PLAY AGAIN</button>
   <button class="btn" onclick="backToMenu()">MAIN MENU</button>
+
 </section>
 
 <script>
@@ -544,12 +733,58 @@ let busy = false;
 const track = document.getElementById("track");
 const popup = document.getElementById("popup");
 
+/* LOAD TIPS FROM GITHUB */
+
+const tipsURL =
+  "https://raw.githubusercontent.com/waritnan09073-boop/free-the-animals/main/Tips-Game-free-the-animals";
+
+async function loadTips() {
+  const container = document.getElementById("tipsContent");
+
+  try {
+    const response = await fetch(tipsURL, {
+      cache: "no-cache"
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const markdown = await response.text();
+
+    if (window.marked && window.DOMPurify) {
+      const html = marked.parse(markdown);
+      container.innerHTML = DOMPurify.sanitize(html);
+    } else {
+      container.textContent = markdown;
+    }
+
+  } catch (error) {
+    container.innerHTML = `
+      <div style="text-align:center;color:#aaa;padding:20px">
+        <h3>ไม่สามารถโหลด Tips ได้</h3>
+        <p>กรุณาตรวจสอบว่าไฟล์ Tips อยู่ใน GitHub repository และตั้งค่าเป็น Public</p>
+        <button class="btn" onclick="loadTips()">ลองโหลดอีกครั้ง</button>
+      </div>
+    `;
+  }
+}
+
+/* SCREEN */
+
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach(screen => {
     screen.classList.remove("active");
   });
+
   document.getElementById(id).classList.add("active");
+
+  if (id !== "ending") {
+    document.getElementById("endingVideo").pause();
+  }
 }
+
+/* DEVICE SETTINGS */
 
 function setDevice(device) {
   deviceMode = device;
@@ -585,8 +820,12 @@ function applyDevice() {
 }
 
 window.addEventListener("resize", () => {
-  if (deviceMode === "auto") applyDevice();
+  if (deviceMode === "auto") {
+    applyDevice();
+  }
 });
+
+/* BUILD CAGES */
 
 function buildCages() {
   track.innerHTML = "";
@@ -596,7 +835,9 @@ function buildCages() {
     room.className = "room";
 
     room.innerHTML = `
-      <div class="room-number">CAGE ${index + 1} / 10</div>
+      <div class="room-number">
+        CAGE ${index + 1} / 10
+      </div>
 
       <div class="cage" id="cage-${index}">
         <div class="animal" id="animal-${index}">${animal}</div>
@@ -606,13 +847,17 @@ function buildCages() {
       <div class="floor"></div>
 
       <div class="instruction">
-        ${index % 2 === 0 ? "A DOG IS WAITING FOR FREEDOM" : "A CAT IS WAITING FOR FREEDOM"}
+        ${index % 2 === 0
+          ? "A DOG IS WAITING FOR FREEDOM"
+          : "A CAT IS WAITING FOR FREEDOM"}
       </div>
     `;
 
     track.appendChild(room);
   });
 }
+
+/* GAME START */
 
 function startGame() {
   resetValues();
@@ -626,6 +871,7 @@ function resetValues() {
   released = 0;
   score = 0;
   busy = false;
+
   track.style.transform = "translateX(0)";
   popup.style.display = "none";
 }
@@ -644,10 +890,13 @@ function updateUI() {
     busy || released >= 10;
 }
 
+/* RELEASE ANIMAL */
+
 function releaseAnimal() {
   if (busy || released >= 10) return;
 
   busy = true;
+  updateUI();
 
   const cage = document.getElementById("cage-" + current);
   const animal = document.getElementById("animal-" + current);
@@ -662,8 +911,6 @@ function releaseAnimal() {
     released++;
     score += 100;
 
-    updateUI();
-
     document.getElementById("popupTitle").textContent =
       "ANIMAL RELEASED!";
 
@@ -672,8 +919,12 @@ function releaseAnimal() {
       released + " / 10 ตัว";
 
     popup.style.display = "flex";
+
+    updateUI();
   }, 1350);
 }
+
+/* NEXT CAGE */
 
 function nextCage() {
   popup.style.display = "none";
@@ -685,17 +936,22 @@ function nextCage() {
   }
 
   current++;
+
   track.style.transform =
     `translateX(-${current * 100}vw)`;
 
   updateUI();
 }
 
+/* ENDING */
+
 function finishGame() {
   showScreen("ending");
 
   const video = document.getElementById("endingVideo");
+
   video.currentTime = 0;
+
   video.play().catch(() => {
     // ผู้เล่นสามารถกดปุ่มเล่นวิดีโอเองได้
   });
@@ -703,7 +959,9 @@ function finishGame() {
 
 function backToMenu() {
   document.getElementById("endingVideo").pause();
+
   popup.style.display = "none";
+
   showScreen("menu");
 }
 
@@ -712,8 +970,12 @@ function resetGame() {
   startGame();
 }
 
+/* INITIALIZE */
+
 applyDevice();
 buildCages();
+loadTips();
+
 </script>
 
 </body>
